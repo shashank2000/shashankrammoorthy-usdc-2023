@@ -22,12 +22,28 @@
     /** You will need to implement your search and 
      * return the appropriate object here. */
 
-    var result = {
-        "SearchTerm": "",
+    // search through the scannedTextObj and find every occurence of the searchTerm
+    // return an object with the searchTerm and an array of objects with the ISBN, Page, and Line number of each occurence
+    var resultObj = {
+        "SearchTerm": searchTerm,
         "Results": []
     };
-    
-    return result; 
+    for (var i = 0; i < scannedTextObj.length; i++) {
+        var book = scannedTextObj[i];
+        var bookContent = book.Content;
+        for (var j = 0; j < bookContent.length; j++) {
+            var line = bookContent[j];
+            if (line.Text.includes(searchTerm)) {
+                var result = {
+                    "ISBN": book.ISBN,
+                    "Page": line.Page,
+                    "Line": line.Line
+                };
+                resultObj.Results.push(result);
+            }
+        }
+    }
+    return resultObj;
 }
 
 /** Example input object. */
@@ -102,3 +118,146 @@ if (test2result.Results.length == 1) {
     console.log("Expected:", twentyLeaguesOut.Results.length);
     console.log("Received:", test2result.Results.length);
 }
+
+
+
+/** Example input object. */
+const inputObj2 = [
+    {
+        "Title": "Twenty Thousand Leagues Under the Sea",
+        "ISBN": "9780000528531",
+        "Content": [
+            {
+                "Page": 31,
+                "Line": 8,
+                "Text": "now simply went on by her own momentum.  The dark-"
+            },
+            {
+                "Page": 31,
+                "Line": 9,
+                "Text": "ness was then profound; and however good the Canadian\'s"
+            },
+            {
+                "Page": 31,
+                "Line": 10,
+                "Text": "eyes were, I asked myself how he had managed to see, and"
+            } 
+        ] 
+    }, 
+    {
+        "Title": "Diary of a Wimpy Kid",
+        "ISBN": "9780000528525",
+        "Content": [
+            {
+                "Page": 321,
+                "Line": 8,
+                "Text": "now simply went on, the darkness and the light, the"
+            },
+            {
+                "Page": 131,
+                "Line": 12,
+                "Text": "hello Mr. Potato Head, how are you today?"
+            },
+            {
+                "Page": 24,
+                "Line": 10,
+                "Text": "dawn and dusk, the day and the night, the good and the bad, the potato"
+            } 
+        ] 
+    }
+]
+
+/**
+ * Positive tests: tests that return a match.
+ */
+const positiveResult = {
+    "SearchTerm": "the",
+    "Results": [
+        {
+            "ISBN": "9780000528531",
+            "Page": 31,
+            "Line": 9
+        },
+        {
+            "ISBN": "9780000528525",
+            "Page": 321,
+            "Line": 8
+        },
+        {
+            "ISBN": "9780000528525",
+            "Page": 24,
+            "Line": 10
+        }
+    ]
+}
+
+const test3result = findSearchTermInBooks("the", inputObj2);
+if (JSON.stringify(positiveResult) === JSON.stringify(test3result)) {
+    console.log("PASS: Test 3");
+} else {
+    console.log("FAIL: Test 3");
+    console.log("Expected:", twentyLeaguesOut);
+    console.log("Received:", test1result);
+}
+
+
+/**
+ * Negative tests: tests that do not return a match.
+ */
+const negativeResult = {
+    "SearchTerm": "thejfl",
+    "Results": []
+}
+
+const test4result = findSearchTermInBooks("thejfl", inputObj2);
+if (JSON.stringify(negativeResult) === JSON.stringify(test4result)) {
+    console.log("PASS: Test 4");
+} else {
+    console.log("FAIL: Test 4");
+    console.log("Expected:", negativeResult);
+    console.log("Received:", test4result);
+}
+
+/**
+ * Case sensitive test.
+ */
+const caseSensitiveResult = {
+    "SearchTerm": "Potato",
+    "Results": [
+        {
+            "ISBN": "9780000528525",
+            "Page": 131,
+            "Line": 12
+        }
+    ]
+}
+
+const test5result = findSearchTermInBooks("Potato", inputObj2);
+if (JSON.stringify(caseSensitiveResult) === JSON.stringify(test5result)) {
+    console.log("PASS: Test 5");
+}   else {
+    console.log("FAIL: Test 5");
+    console.log("Expected:", caseSensitiveResult);
+    console.log("Received:", test5result);
+}   
+
+
+const caseSensitiveResult2 = {
+    "SearchTerm": "potato",
+    "Results": [
+        {
+            "ISBN": "9780000528525",
+            "Page": 24,
+            "Line": 10
+        }
+    ]
+}
+
+const test6result = findSearchTermInBooks("potato", inputObj2);
+if (JSON.stringify(caseSensitiveResult2) === JSON.stringify(test6result)) {
+    console.log("PASS: Test 6");
+}   else {
+    console.log("FAIL: Test 6");
+    console.log("Expected:", caseSensitiveResult2);
+    console.log("Received:", test6result);
+}   
